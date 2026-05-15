@@ -17,39 +17,63 @@ To write a program to predict the type of species of the Iris flower using the S
 
 ## Program:
 ```
-/*
+"""
 Program to implement the prediction of iris species using SGD Classifier.
 Developed by: Kervin.S
-RegisterNumber:212225220051
+Register Numbers: 212225220051
+"""
 
-from sklearn import datasets
-from sklearn.linear_model import SGDClassifier
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
-
-iris = datasets.load_iris()
-X = iris.data
-Y = iris.target
-
-X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=0)
-
-model = SGDClassifier(max_iter=1000, learning_rate='optimal')
-model.fit(X_train, Y_train)
-
-Y_pred = model.predict(X_test)
-
-print("Accuracy:", accuracy_score(Y_test, Y_pred))
-
-sample = [X[0]]
-prediction = model.predict(sample)
-
-print("Predicted Species:", iris.target_names[prediction][0]) 
-*/
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import SGDClassifier
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+iris = load_iris()
+df = pd.DataFrame(data=iris.data, columns=iris.feature_names)
+df['target'] = iris.target
+print("First 5 rows of the dataset:")
+print(df.head())
+X = df.drop('target', axis=1)
+y = df['target']
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test  = scaler.transform(X_test)
+sgd_clf = SGDClassifier(max_iter=1000, tol=1e-3, random_state=42)
+sgd_clf.fit(X_train, y_train)
+y_pred = sgd_clf.predict(X_test)
+print(f"\nAccuracy: {accuracy_score(y_test, y_pred):.3f}")
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred, target_names=iris.target_names))
+cm = confusion_matrix(y_test, y_pred)
+print("Confusion Matrix:")
+print(cm)
+plt.figure(figsize=(6, 5))
+sns.heatmap(
+    cm,
+    annot=True,
+    fmt='d',
+    cmap='Oranges',
+    xticklabels=iris.target_names,
+    yticklabels=iris.target_names
+)
+plt.title("Confusion Matrix — Iris SGD Classifier")
+plt.xlabel("Predicted Label")
+plt.ylabel("True Label")
+plt.tight_layout()
+plt.show()
 ```
 
 ## Output:
-<img width="291" height="49" alt="image" src="https://github.com/user-attachments/assets/94d8fd6f-7e40-47a9-8b30-538bd8c6261f" />
+ 
+<img width="766" height="618" alt="image" src="https://github.com/user-attachments/assets/1c35e7eb-84b4-48b3-86de-f7e9f8c0e64d" />
 
+<img width="748" height="540" alt="image" src="https://github.com/user-attachments/assets/4dd8ab07-e0ff-4eb5-9cd2-68d66ac68ca5" />
 
 
 ## Result:
